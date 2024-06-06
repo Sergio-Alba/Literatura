@@ -1,26 +1,44 @@
 package com.sergio.Libreria.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
-@Table(name="libros")
+@Table(name = "libro")
 public class Libro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long Id;
     @Column(unique = true)
     private String titulo;
-    private String autores;
-    private String lenguages;
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Autor autor;
+    @ElementCollection
+    @CollectionTable(name = "idiomas", joinColumns = @JoinColumn(name = "libro_id"))
+    @Column(name = "idioma")
+    private List<String> idioma;
     private Integer descargas;
 
+    public Libro(){};
+
+    public Libro(Long id, String titulo, Autor autor, List<String> idioma, Integer descargas) {
+        Id = id;
+        this.titulo = titulo;
+        this.autor = autor;
+        this.idioma = idioma;
+        this.descargas = descargas;
+    }
+
     public Long getId() {
-        return id;
+        return Id;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        Id = id;
     }
 
     public String getTitulo() {
@@ -31,20 +49,20 @@ public class Libro {
         this.titulo = titulo;
     }
 
-    public String getAutores() {
-        return autores;
+    public Autor getAutor() {
+        return autor;
     }
 
-    public void setAutores(String autores) {
-        this.autores = autores;
+    public void setAutor(Autor autor) {
+        this.autor = autor;
     }
 
-    public String getLenguages() {
-        return lenguages;
+    public List<String> getIdioma() {
+        return idioma;
     }
 
-    public void setLenguages(String lenguages) {
-        this.lenguages = lenguages;
+    public void setIdioma(List<String> idioma) {
+        this.idioma = idioma;
     }
 
     public Integer getDescargas() {
@@ -55,19 +73,13 @@ public class Libro {
         this.descargas = descargas;
     }
 
-    public Libro(DatosLibros datosLibros){
-        this.titulo = datosLibros.titulo();
-        this.autores = datosLibros.autores();
-        this.lenguages = datosLibros.lenguaje();
-        this.descargas = datosLibros.descargas();
-    }
-
     @Override
     public String toString() {
-        return
-                "titulo='" + titulo + '\'' +
-                ", autores='" + autores + '\'' +
-                ", lenguages='" + lenguages + '\'' +
-                ", descargas=" + descargas;
+        return "Libro    \n" +
+                "titulo= '" + titulo + '\'' +
+                ", autor= " + autor +
+                ", idioma= " + idioma +
+                ", descargas =" + descargas +
+                '}';
     }
 }

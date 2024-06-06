@@ -3,11 +3,13 @@ package com.sergio.Libreria.model;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DatosLibros(
         @JsonAlias("title") String titulo,
-        @JsonAlias("authors") String autores,
-        @JsonAlias("languages") String lenguaje,
+        @JsonAlias("authors") List<DatosAutor> autores,
+        @JsonAlias("languages") List<String> idioma,
         @JsonAlias("download_count") Integer descargas
 ) {
 }
