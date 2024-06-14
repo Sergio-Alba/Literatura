@@ -1,44 +1,40 @@
 package com.sergio.Libreria.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
-@Table(name = "libro")
+@Table(name = "libros")
 public class Libro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
     @Column(unique = true)
     private String titulo;
-    @ManyToOne
-    @JoinColumn(name = "autor_id")
-    private Autor autor;
-    @ElementCollection
-    @CollectionTable(name = "idiomas", joinColumns = @JoinColumn(name = "libro_id"))
-    @Column(name = "idioma")
     private List<String> idioma;
     private Integer descargas;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "autor_id")
+    private Autor autor;
+
 
     public Libro(){};
 
-    public Libro(Long id, String titulo, Autor autor, List<String> idioma, Integer descargas) {
-        Id = id;
-        this.titulo = titulo;
-        this.autor = autor;
-        this.idioma = idioma;
-        this.descargas = descargas;
+    public Libro(DatosLibros d,Autor a){
+        this.titulo = d.titulo();
+        this.autor = a;
+        this.idioma = d.idioma();
+        this.descargas = d.descargas();
     }
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getTitulo() {
@@ -75,11 +71,11 @@ public class Libro {
 
     @Override
     public String toString() {
-        return "Libro    \n" +
-                "titulo= '" + titulo + '\'' +
-                ", autor= " + autor +
-                ", idioma= " + idioma +
-                ", descargas =" + descargas +
-                '}';
+        return "\n--------------  Libro  --------------" +
+                "\n\tTitulo: " + titulo +
+                "\n\tAutor: " + autor.getNombre() +
+                "\n\tIdiomas: " + idioma.get(0) +
+                "\n\tDescargas: " + descargas +
+                "\n-------------------------------------";
     }
 }

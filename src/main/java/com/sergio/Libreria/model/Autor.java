@@ -1,24 +1,22 @@
 package com.sergio.Libreria.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="autor")
+@Table(name="autores")
 public class Autor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
     @Column(unique = true)
     private String nombre;
     private Integer fechaDeNacimiento;
     private Integer fechaDeFallecimiento;
-    @OneToMany(mappedBy = "autor")
-    private List<Libro> libros = new ArrayList<>();
+    @OneToMany(mappedBy = "autor",cascade = CascadeType.ALL)
+    private List<Libro> libro = new ArrayList<>();
 
     public Autor(){}
     public Autor(DatosAutor d) {
@@ -26,13 +24,30 @@ public class Autor {
         this.fechaDeNacimiento = d.fechaDeNacimiento();
         this.fechaDeFallecimiento = d.fechaDeFallecimiento();
     }
+    @Override
+    public String toString() {
+        return  "Autor" +
+                "\n\tNombre: " + nombre  +
+                "\n\tFecha De Nacimiento: " + fechaDeNacimiento +
+                "\n\tFecha De Fallecimiento: " + fechaDeFallecimiento +
+                "\n\tLibros: " + libro ;
+    }
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
+    }
+
+    public List<Libro> getLibro() {
+        return libro;
+    }
+
+    public void setLibro(List<Libro> libro) {
+        libro.forEach(l -> l.setAutor(this));
+        this.libro = libro;
     }
 
     public String getNombre() {
@@ -57,22 +72,5 @@ public class Autor {
 
     public void setFechaDeFallecimiento(Integer fechaDeFallecimiento) {
         this.fechaDeFallecimiento = fechaDeFallecimiento;
-    }
-
-    public List<Libro> getLibros() {
-        return libros;
-    }
-
-    public void setLibros(List<Libro> libros) {
-        this.libros = libros;
-    }
-
-    @Override
-    public String toString() {
-        return "Autor" +
-                "\n nombre: '" + nombre + '\'' +
-                "\n  fechaDeNacimiento: " + fechaDeNacimiento +
-                "\n  fechaDeFallecimiento: " + fechaDeFallecimiento +
-                "\n  libros: " + libros;
     }
 }
