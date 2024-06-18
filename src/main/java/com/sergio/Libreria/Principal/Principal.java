@@ -18,8 +18,6 @@ public class Principal {
     private List<Libro> libro;
     private List<Autor> autor;
 
-
-
     public Principal( AutorRepository autorRepository, LibroRepository libroRepository) {
         this.autorRepository = autorRepository;
         this.libroRepository = libroRepository;
@@ -124,6 +122,7 @@ public class Principal {
     private void mostrarAutoresVivosDesdeElAnio(){
         System.out.println("Ingresa el año vivo de autor(es) que desea buscar: ");
         var anio = teclado.nextInt();
+        System.out.println("Autores vivos en " + anio);
         autor = autorRepository.listaAutoresVivosPorAnio(anio);
         autor.stream()
                 .forEach(System.out::println);
@@ -170,8 +169,8 @@ public class Principal {
     }
     // Obtiene los 5 libros mas descargados de orden desendiente
     private void mostrarTop5LibrosMasDescargados(){
-        System.out.println("\nTop 5 libros mas descargados:");
         libro = libroRepository.listarLosTop5LibrosMasDescargados();
+        System.out.println("\nTop 5 libros mas descargados:");
         libro.stream()
                 .forEach(System.out::println);
     }
