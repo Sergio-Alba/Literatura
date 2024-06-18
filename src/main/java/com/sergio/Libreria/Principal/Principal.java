@@ -37,6 +37,7 @@ public class Principal {
                         3 - Listar autores registrados
                         4 - Listar autores vivos de un determinado año
                         5 - Listar libros por idioma
+                        6 - Top 5 Libros mas Descargados
                         0 - Salir
                         """;
                 System.out.println(menu);
@@ -58,6 +59,9 @@ public class Principal {
                     break;
                 case 5 :
                     mostrarLibrosPorIdioma();
+                    break;
+                case 6 :
+                    mostrarTop5LibrosMasDescargados();
                     break;
                 case 0:
                     System.out.println("Cerrando aplicación...");
@@ -163,6 +167,13 @@ public class Principal {
                     System.out.println("Ningún idioma seleccionado");
             }
         }
+    }
+    // Obtiene los 5 libros mas descargados de orden desendiente
+    private void mostrarTop5LibrosMasDescargados(){
+        System.out.println("\nTop 5 libros mas descargados:");
+        libro = libroRepository.listarLosTop5LibrosMasDescargados();
+        libro.stream()
+                .forEach(System.out::println);
     }
     // Convierte de Datos a datosLibros segun el nombre del libro buscado
     private List<DatosLibros> convierteALibros(String tituloLibro) {
