@@ -15,6 +15,10 @@ public class Principal {
     private ConvierteDatos convierteDatos = new ConvierteDatos();
     private AutorRepository autorRepository;
     private LibroRepository libroRepository;
+    private List<Libro> libro;
+    private List<Autor> autor;
+
+
 
     public Principal( AutorRepository autorRepository, LibroRepository libroRepository) {
         this.autorRepository = autorRepository;
@@ -22,8 +26,8 @@ public class Principal {
     }
 
     public void mostrarMenu() {
-        var option = -1;
         try {
+            int option = -1;
             while (option != 0) {
                 var menu = """
                         \nElije una opción atravéz de su numero
@@ -43,24 +47,24 @@ public class Principal {
                     case 1:
                         buscarLibroWeb();
                         break;
-//                case 2 :
-//                    mostrarLibrosRegistrados();
-//                    break;
-//                case 3 :
-//                    mostrarAutoresRegistrados();
-//                    break;
-//                case 4 :
-//                    mostrarAutoresVivosDesdeElAnio();
-//                    break;
-//                case 5 :
-//                    mostrarLibrosPorIdioma();
-//                    break;
-                    case 0:
-                        System.out.println("Cerrando aplicación...");
-                        break;
-                    default:
-                        System.out.println("Opcion no valida.");
-                        break;
+                case 2 :
+                    mostrarLibrosRegistrados();
+                    break;
+                case 3 :
+                    mostrarAutoresRegistrados();
+                    break;
+                case 4 :
+                    mostrarAutoresVivosDesdeElAnio();
+                    break;
+                case 5 :
+                    mostrarLibrosPorIdioma();
+                    break;
+                case 0:
+                    System.out.println("Cerrando aplicación...");
+                    break;
+                default:
+                     System.out.println("Opcion no valida.");
+                     break;
                 }
             }
         }catch (InputMismatchException e){
@@ -70,7 +74,7 @@ public class Principal {
     // busca el libro por el nombre desde la api
     private void buscarLibroWeb() {
         System.out.println("Escribe el nombre del libro que deseas buscar:");
-        var tituloLibro = teclado.nextLine();
+        String tituloLibro = teclado.nextLine();
         // Optenemos una lista
         List<DatosLibros> libroBuscado = convierteALibros(tituloLibro);
         // Verificamos si la lista no esta vacia
@@ -96,14 +100,75 @@ public class Principal {
         }else {
             System.out.println("No existe un libro con ese nombre");
         }
-    }
 
+    }
+    // funcion para obtener datos de los libros de la base de datos y mostrar los resultado
+    private void mostrarLibrosRegistrados(){
+        libro =  libroRepository.findAll();
+        System.out.println("Libros registrados en la base de datos");
+        libro.stream().sorted(Comparator.comparing(Libro::getTitulo))
+                    .forEach(System.out::println);
+    }
+    // Obtiene los datos del los autores registrados en la base de datos
+    private void mostrarAutoresRegistrados(){
+        autor = autorRepository.findAll();
+        System.out.println("Autores registrados en la base de datos");
+        autor.stream()
+                .forEach(System.out::println);
+    }
+    // Obtiene los autores vivos desde un año dado
+    private void mostrarAutoresVivosDesdeElAnio(){
+        System.out.println("Ingresa el año vivo de autor(es) que desea buscar: ");
+        var anio = teclado.nextInt();
+        autor = autorRepository.listaAutoresVivosPorAnio(anio);
+        autor.stream()
+                .forEach(System.out::println);
+    }
+    // Trae los libros que sean de un idioma  que se le pase
+    private void mostrarLibrosPorIdioma(){
+        System.out.println("Selecciona el idioma que deseas buscar: ");
+        int opcion = -1;
+        while (opcion != 0) {
+            var opciones = """
+                    1- en Ingles
+                    2- es Español
+                    3- fr Franses
+                    4- pt Portugues
+                    
+                    0- salir
+                    """;
+            System.out.println(opciones);
+            opcion = teclado.nextInt();
+            teclado.nextLine();
+            switch (opcion) {
+                case 1:
+                    List<Libro> librosEnIngles = libroRepository.findByIdioma("en");
+                    librosEnIngles.forEach(System.out::println);
+                    break;
+                case 2:
+                    List<Libro> librosEnEspanol = libroRepository.findByIdioma("es");
+                    librosEnEspanol.forEach(System.out::println);
+                    break;
+                case 3:
+                    List<Libro> librosEnFrances = libroRepository.findByIdioma("fr");
+                    librosEnFrances.forEach(System.out::println);
+                    break;
+                case 4:
+                    List<Libro> librosEnPortugues = libroRepository.findByIdioma("pt");
+                    librosEnPortugues.forEach(System.out::println);
+                    break;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Ningún idioma seleccionado");
+            }
+        }
+    }
     // Convierte de Datos a datosLibros segun el nombre del libro buscado
     private List<DatosLibros> convierteALibros(String tituloLibro) {
         var json = consumoApi.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replaceAll(" ", "+"));
         Datos datos = convierteDatos.obtenerDatos(json, Datos.class);
         return datos.libros();
     }
-
 }
 
