@@ -15,7 +15,7 @@ public class Autor {
     private String nombre;
     private Integer fechaDeNacimiento;
     private Integer fechaDeFallecimiento;
-    @OneToMany(mappedBy = "autor",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Libro> libro = new ArrayList<>();
 
     public Autor(){}
@@ -26,11 +26,21 @@ public class Autor {
     }
     @Override
     public String toString() {
-        return  "Autor" +
-                "\n\tNombre: " + nombre  +
+        StringBuilder librosStr = new StringBuilder();
+        if (libro != null) {
+            for (Libro l : libro) {
+                librosStr.append("\n\t\t").append(l.getTitulo());
+            }
+        } else {
+            librosStr.append("\n\t\tNo hay libros registrados.");
+        }
+
+        return  "\n----------  Autor  ------------------" +
+                "\n\tNombre: " + nombre +
                 "\n\tFecha De Nacimiento: " + fechaDeNacimiento +
                 "\n\tFecha De Fallecimiento: " + fechaDeFallecimiento +
-                "\n\tLibros: " + libro ;
+                "\n\tLibros: " + librosStr.toString() +
+                "\n-------------------------------------";
     }
 
     public Long getId() {
@@ -46,7 +56,6 @@ public class Autor {
     }
 
     public void setLibro(List<Libro> libro) {
-        libro.forEach(l -> l.setAutor(this));
         this.libro = libro;
     }
 
@@ -73,4 +82,5 @@ public class Autor {
     public void setFechaDeFallecimiento(Integer fechaDeFallecimiento) {
         this.fechaDeFallecimiento = fechaDeFallecimiento;
     }
+
 }

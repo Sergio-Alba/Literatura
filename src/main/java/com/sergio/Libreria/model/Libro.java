@@ -3,8 +3,6 @@ package com.sergio.Libreria.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "libros")
 public class Libro {
@@ -13,9 +11,9 @@ public class Libro {
     private Long id;
     @Column(unique = true)
     private String titulo;
-    private List<String> idioma;
+    private String idioma;
     private Integer descargas;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "autor_id")
     private Autor autor;
 
@@ -25,8 +23,19 @@ public class Libro {
     public Libro(DatosLibros d,Autor a){
         this.titulo = d.titulo();
         this.autor = a;
-        this.idioma = d.idioma();
+        this.idioma = d.idioma().get(0);
         this.descargas = d.descargas();
+    }
+
+    @Override
+    public String toString() {
+        String nombreAutor = (autor != null) ? autor.getNombre() : "Desconocido";;
+        return "\n----------  Libro  ------------------" +
+                "\n\tTitulo: " + titulo +
+                "\n\tAutor: " + nombreAutor +
+                "\n\tIdiomas: " + idioma +
+                "\n\tDescargas: " + descargas +
+                "\n-------------------------------------";
     }
 
     public Long getId() {
@@ -53,11 +62,11 @@ public class Libro {
         this.autor = autor;
     }
 
-    public List<String> getIdioma() {
+    public String getIdioma() {
         return idioma;
     }
 
-    public void setIdioma(List<String> idioma) {
+    public void setIdioma(String idioma) {
         this.idioma = idioma;
     }
 
@@ -69,13 +78,6 @@ public class Libro {
         this.descargas = descargas;
     }
 
-    @Override
-    public String toString() {
-        return "\n--------------  Libro  --------------" +
-                "\n\tTitulo: " + titulo +
-                "\n\tAutor: " + autor.getNombre() +
-                "\n\tIdiomas: " + idioma.get(0) +
-                "\n\tDescargas: " + descargas +
-                "\n-------------------------------------";
-    }
+
+
 }
