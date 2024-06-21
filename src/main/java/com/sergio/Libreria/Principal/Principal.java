@@ -80,28 +80,36 @@ public class Principal {
         // Optenemos una lista
         List<DatosLibros> libroBuscado = convierteALibros(tituloLibro);
         // Verificamos si la lista no esta vacia
-        if (libroBuscado.size() != 0){
-            DatosAutor datosAutor = libroBuscado.get(0).autores().get(0);
 
-            // Buscamos al autor en la base de datos si ya exixte
-            Autor existeAutor = autorRepository.findByNombre(datosAutor.nombre());
+            if (libroBuscado.size() != 0){
+                DatosAutor datosAutor = libroBuscado.get(0).autores().get(0);
 
-            // Verificamos si el autor existe, si existe guarda el libro y lo referencia al Id del autor ya existe
-            if (existeAutor != null){
-                Libro libro = new Libro(libroBuscado.get(0),existeAutor);
-                libroRepository.save(libro);
-                System.out.println(libro);
+                // Verificamos si el libro ya está registrado en la base de datos
+                Libro libroExistente = libroRepository.findByTituloContainsIgnoreCase(libroBuscado.get(0).titulo());
+                if (libroExistente != null) {
+                    System.out.println("El libro: " + libroExistente.getTitulo() + " ya está registrado en la base de datos. ");
+                    return;
+                }
+
+                // Buscamos al autor en la base de datos si ya exixte
+                Autor existeAutor = autorRepository.findByNombre(datosAutor.nombre());
+
+                // Verificamos si el autor existe, si existe guarda el libro y lo referencia al Id del autor ya existe
+                if (existeAutor != null){
+                    Libro libro = new Libro(libroBuscado.get(0),existeAutor);
+                    libroRepository.save(libro);
+                    System.out.println(libro);
+                }else {
+                    // Si el autor no existe entoces crea uno nuevo
+                    Autor nuevoAutor = new Autor(datosAutor);
+                    autorRepository.save(nuevoAutor);
+                    Libro libro = new Libro(libroBuscado.get(0),nuevoAutor);
+                    libroRepository.save(libro);
+                    System.out.println(libro);
+                }
             }else {
-                // Si el autor no existe entoces crea uno nuevo
-                Autor nuevoAutor = new Autor(datosAutor);
-                autorRepository.save(nuevoAutor);
-                Libro libro = new Libro(libroBuscado.get(0),nuevoAutor);
-                libroRepository.save(libro);
-                System.out.println(libro);
+                System.out.println("No existe un libro con ese nombre");
             }
-        }else {
-            System.out.println("No existe un libro con ese nombre");
-        }
 
     }
     // funcion para obtener datos de los libros de la base de datos y mostrar los resultado

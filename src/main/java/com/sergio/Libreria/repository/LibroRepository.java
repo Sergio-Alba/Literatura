@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LibroRepository extends JpaRepository<Libro,Long> {
+    Libro findByTituloContainsIgnoreCase(String titulo);
     List<Libro> findAll();
     List<Libro> findByIdioma(String idioma);
     @Query("SELECT l FROM Libro l ORDER BY l.descargas DESC LIMIT 5")
